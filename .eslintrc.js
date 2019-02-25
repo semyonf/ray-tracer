@@ -58,6 +58,10 @@ module.exports = {
         'maxBOF': 0,
         'maxEOF': 1
       }
+    ],
+    'eol-last': [
+      'error',
+      'always'
     ]
   }
 }

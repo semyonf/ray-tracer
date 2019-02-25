@@ -36,3 +36,6 @@ export class Vec3 {
     return this.x * other.x + this.y * other.y + this.z * other.z
   }
 }
+
+Vec3.UP = new Vec3(0, 1, 0)
+Vec3.FORWARD = new Vec3(0, 0, 1)
