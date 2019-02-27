@@ -6,9 +6,14 @@ import { Ray } from './Ray'
 
   const k = 640
   const m = 480
+  const zoom = 0
 
   canvas.width = k
   canvas.height = m
+
+  canvas.style.height = m / devicePixelRatio + 'px'
+  canvas.style.width = k / devicePixelRatio + 'px'
+
   const ctx = canvas.getContext('2d')
   const data = ctx.getImageData(0, 0, k, m)
   data.data.fill(255)
@@ -39,14 +44,14 @@ import { Ray } from './Ray'
   const p1m = tn.sub(bn.scale(gx)).sub(vn.scale(gy))
 
   const sphere = {
-    origin: new Vec3(),
+    origin: new Vec3(2, 0, 10),
     radius: 3
   }
 
   for (let i = 0; i < k; i++) {
     for (let j = 0; j < m; j++) {
       const pij = p1m.add(qx.scale(i - 1)).add(qy.scale(j - 1))
-      const rij = pij.normalize()
+      const rij = pij.normalize().scale(1 + zoom * 0.1)
 
       const ray = new Ray(E, rij)
 
@@ -75,6 +80,6 @@ import { Ray } from './Ray'
       return new Vec3(244, 67, 54)
     }
 
-    return ray.direction.scale(300)
+    return ray.direction.scale(250)
   }
 })(window.vpCanvas)
