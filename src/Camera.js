@@ -1,15 +1,14 @@
-import { Vec3 } from './Vec3'
-
 export class Camera {
-  constructor(
-    origin = new Vec3(),
-    direction = Vec3.FORWARD,
-    fieldOfView = Math.PI / 2,
-    widthPx = 640,
-    heightPx = 480
-  ) {
+  /**
+   * @param {Vec3} origin
+   * @param {Vec3} target
+   * @param {number} widthPx - image width in pixels
+   * @param {number} heightPx - image height in pixels
+   * @param {number} fieldOfView - angle in radians
+   */
+  constructor(origin, target, widthPx, heightPx, fieldOfView = Math.PI / 4) {
     this.origin = origin
-    this.direction = direction
+    this.target = target
     this.fieldOfView = fieldOfView
     this.widthPx = widthPx
     this.heightPx = heightPx
