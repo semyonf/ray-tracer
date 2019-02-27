@@ -38,6 +38,11 @@ import { Ray } from './Ray'
 
   const p1m = tn.sub(bn.scale(gx)).sub(vn.scale(gy))
 
+  const sphere = {
+    origin: new Vec3(),
+    radius: 3
+  }
+
   for (let i = 0; i < k; i++) {
     for (let j = 0; j < m; j++) {
       const pij = p1m.add(qx.scale(i - 1)).add(qy.scale(j - 1))
@@ -45,22 +50,31 @@ import { Ray } from './Ray'
 
       const ray = new Ray(E, rij)
 
-      const color = traceRay(ray)
+      const colorVector = traceRay(ray)
 
       const byte = (i * 4) + (j * k * 4)
-      data.data[byte + 0] = color.x
-      data.data[byte + 1] = color.y
-      data.data[byte + 2] = color.z
+      data.data[byte + 0] = colorVector.x
+      data.data[byte + 1] = colorVector.y
+      data.data[byte + 2] = colorVector.z
     }
   }
 
   ctx.putImageData(data, 0, 0)
 
   /**
-   * @todo implement
+   * @todo WIP
    * @param {Ray} ray
    */
   function traceRay(ray) {
+    const rayOriginToSphereCenter = sphere.origin.sub(ray.origin)
+    const rayLen = rayOriginToSphereCenter.dotProduct(ray.direction)
+    const rayOriginToSphereCenterLen = rayOriginToSphereCenter.calcNorm()
+    const D = sphere.radius ** 2 - rayOriginToSphereCenterLen ** 2 + rayLen ** 2
+
+    if (D >=0) {
+      return new Vec3(244, 67, 54)
+    }
+
     return ray.direction.scale(300)
   }
 })(window.vpCanvas)
