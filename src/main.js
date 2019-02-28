@@ -8,8 +8,8 @@ const imageHeight = 480 * devicePixelRatio
 
 canvas.width = imageWidth
 canvas.height = imageHeight
-canvas.style.height = `${imageHeight / devicePixelRatio }px`
-canvas.style.width = `${imageWidth / devicePixelRatio }px`
+canvas.style.height = `${imageHeight / devicePixelRatio}px`
+canvas.style.width = `${imageWidth / devicePixelRatio}px`
 
 const context = canvas.getContext('2d')
 const data = context.getImageData(0, 0, imageWidth, imageHeight)
@@ -63,6 +63,15 @@ for (let x = 0; x < imageWidth; x++) {
 
 context.putImageData(data, 0, 0)
 
+function specular(eyeVector, normal, light) {
+  const n = 14
+  const k = eyeVector
+    .sub(normal.scale(2).scale(normal.dotProduct(eyeVector)))
+    .dotProduct(light) ** (n * 2)
+
+  return k
+}
+
 /**
  * @param {Ray} ray
  */
@@ -74,15 +83,19 @@ function traceRay(ray) {
   if (D >= 0) {
     const dist = sight - Math.sqrt(D)
     const intersectionPoint = ray.origin.add(ray.direction.scale(dist))
-    const lightDirection = new Vec3(2, 2, 2).normalize()
+    const lightDirection = new Vec3(1, 1, 1).normalize()
     const normal = sphere.origin.sub(intersectionPoint).normalize()
     const intensity = lightDirection.dotProduct(normal)
 
     const redColor = new Vec3(244, 67, 54)
 
-    return redColor.scale(Math.min(1, intensity))
-      .add(normal.scale(intensity * 100))
+    const spec = specular(ray.direction, normal, lightDirection)
+
+    return redColor
+      .scale(Math.min(1, intensity))
+      .add((new Vec3(125, 125, 125).scale(Math.min(1, spec))))
+      .add(normal.scale(70))
   }
 
-  return ray.direction.scale(220)
+  return ray.direction.scale(150)
 }
