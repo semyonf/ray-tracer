@@ -1,3 +1,3 @@
 # raytracer
 
-![render](https://i.imgur.com/z1t3bDZ.png)
+![render](https://i.imgur.com/7mmjGp9.png)
