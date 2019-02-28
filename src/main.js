@@ -67,22 +67,20 @@ context.putImageData(data, 0, 0)
  * @param {Ray} ray
  */
 function traceRay(ray) {
-  const rayOriginToSphereCenter = sphere.origin.sub(ray.origin)
-  const rayLen = rayOriginToSphereCenter.dotProduct(ray.direction)
-  const rayOriginToSphereCenterLen = rayOriginToSphereCenter.calcNorm()
-  const D = sphere.radius ** 2 - rayOriginToSphereCenterLen ** 2 + rayLen ** 2
+  const camToSphereCenter = sphere.origin.sub(ray.origin)
+  const sight = camToSphereCenter.dotProduct(ray.direction)
+  const D = sphere.radius ** 2 - camToSphereCenter.calcNorm() ** 2 + sight ** 2
 
   if (D >= 0) {
-    /**
-     * @todo investigate Math.sqrt(D * λ) expression
-     */
-    const intersectionPoint = ray.direction.scale(rayLen - Math.sqrt(D))
-    const lightDirection = new Vec3(5, -5, -10).normalize()
+    const dist = sight - Math.sqrt(D)
+    const intersectionPoint = ray.origin.add(ray.direction.scale(dist))
+    const lightDirection = new Vec3(2, 2, 2).normalize()
     const normal = sphere.origin.sub(intersectionPoint).normalize()
     const intensity = lightDirection.dotProduct(normal)
-    const redColor = new Vec3(244, 67, 54).scale(Math.min(intensity, 1))
 
-    return redColor
+    const redColor = new Vec3(244, 67, 54)
+
+    return redColor.scale(Math.min(1, intensity))
   }
 
   return ray.direction.scale(220)
