@@ -3,13 +3,13 @@ import { Ray } from './Ray'
 
 const canvas = window.vpCanvas
 
-const imageWidth = 640
-const imageHeight = 480
+const imageWidth = 640 * devicePixelRatio
+const imageHeight = 480 * devicePixelRatio
 
 canvas.width = imageWidth
 canvas.height = imageHeight
-canvas.style.height = `${imageHeight / devicePixelRatio}px`
-canvas.style.width = `${imageWidth / devicePixelRatio}px`
+canvas.style.height = `${imageHeight / devicePixelRatio }px`
+canvas.style.width = `${imageWidth / devicePixelRatio }px`
 
 const context = canvas.getContext('2d')
 const data = context.getImageData(0, 0, imageWidth, imageHeight)
@@ -81,6 +81,7 @@ function traceRay(ray) {
     const redColor = new Vec3(244, 67, 54)
 
     return redColor.scale(Math.min(1, intensity))
+      .add(normal.scale(intensity * 100))
   }
 
   return ray.direction.scale(220)
