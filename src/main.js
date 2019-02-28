@@ -40,10 +40,20 @@ const leftBottomPixelCenter = camDirectionNormalized
   .sub(bn.scale(viewportHalfWidth))
   .sub(vn.scale(viewportHalfHeight))
 
-const sphere = {
-  origin: new Vec3(3, 0, 10),
-  radius: 8
-}
+const spheres = [
+  {
+    origin: new Vec3(-8, 2, 0),
+    radius: 1
+  },
+  {
+    origin: new Vec3(2, 1, -3),
+    radius: 2
+  },
+  {
+    origin: new Vec3(1, 0, 10),
+    radius: 3
+  }
+]
 
 for (let x = 0; x < imageWidth; x++) {
   for (let y = 0; y < imageHeight; y++) {
@@ -64,38 +74,43 @@ for (let x = 0; x < imageWidth; x++) {
 context.putImageData(data, 0, 0)
 
 function specular(eyeVector, normal, light) {
-  const n = 14
+  const n = 60
   const k = eyeVector
-    .sub(normal.scale(2).scale(normal.dotProduct(eyeVector)))
-    .dotProduct(light) ** (n * 2)
+    .sub(normal.scale(2 * normal.dotProduct(eyeVector)))
+    .dotProduct(light)
 
-  return k
+  return Math.abs(k ** n)
 }
 
 /**
  * @param {Ray} ray
  */
 function traceRay(ray) {
-  const camToSphereCenter = sphere.origin.sub(ray.origin)
-  const sight = camToSphereCenter.dotProduct(ray.direction)
-  const D = sphere.radius ** 2 - camToSphereCenter.calcNorm() ** 2 + sight ** 2
+  let pixelColor = new Vec3()
 
-  if (D >= 0) {
-    const dist = sight - Math.sqrt(D)
-    const intersectionPoint = ray.origin.add(ray.direction.scale(dist))
-    const lightDirection = new Vec3(1, 1, 1).normalize()
-    const normal = sphere.origin.sub(intersectionPoint).normalize()
-    const intensity = lightDirection.dotProduct(normal)
+  for (const sphere of spheres) {
+    const camToSphereCenter = sphere.origin.sub(ray.origin)
+    const sight = camToSphereCenter.dotProduct(ray.direction)
+    const D = sphere.radius ** 2 - camToSphereCenter.calcNorm() ** 2 + sight ** 2
 
-    const redColor = new Vec3(244, 67, 54)
+    if (D >= 0) {
+      const dist = sight - Math.sqrt(D)
+      const intersectionPoint = ray.origin.add(ray.direction.scale(dist))
+      const lightDirection = new Vec3(1, 1, 1).normalize()
+      const normal = sphere.origin.sub(intersectionPoint).normalize()
+      const intensity = lightDirection.dotProduct(normal)
 
-    const spec = specular(ray.direction, normal, lightDirection)
+      const redColor = new Vec3(244, 67, 54)
 
-    return redColor
-      .scale(Math.min(1, intensity))
-      .add((new Vec3(125, 125, 125).scale(Math.min(1, spec))))
-      .add(normal.scale(70))
+      const spec = specular(ray.direction, normal, lightDirection)
+
+      pixelColor = pixelColor.add(
+        redColor
+          .scale(Math.min(1, intensity))
+          .add((new Vec3(125, 125, 125).scale(Math.min(1, spec * intensity))))
+      )
+    }
   }
 
-  return ray.direction.scale(150)
+  return pixelColor
 }
