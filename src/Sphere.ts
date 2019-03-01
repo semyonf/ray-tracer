@@ -1,15 +1,17 @@
-import { Intersectable } from './Intersectable'
 import { Intersection } from './Intersection'
-import { Obj3 } from './Obj3'
+import { IObject3D } from './IObject3D'
 import { Ray } from './Ray'
 import { Vec3 } from './Vec3'
 
-export class Sphere extends Obj3 implements Intersectable {
+export class Sphere implements IObject3D {
   public radius: number
+  public origin: Vec3
+  public color: Vec3
 
-  constructor(origin: Vec3, radius: number) {
-    super(origin)
+  constructor(origin: Vec3, color: Vec3, radius: number) {
+    this.origin = origin
     this.radius = radius
+    this.color = color
   }
 
   public normal(pos: Vec3): Vec3 {

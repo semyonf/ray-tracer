@@ -1,5 +1,5 @@
-import { Intersectable } from './Intersectable'
 import { Intersection } from './Intersection'
+import { IObject3D } from './IObject3D'
 import { Ray } from './Ray'
 import { Sphere } from './Sphere'
 import { Vec3 } from './Vec3'
@@ -72,8 +72,10 @@ export class Renderer {
     function traceRay(ray: Ray) {
       let closest: Intersection = null
 
-      const objects: Intersectable[] = [
-        new Sphere(new Vec3(0, 0, 0), 3),
+      const objects: IObject3D[] = [
+        new Sphere(new Vec3(3, -3, 0), new Vec3(255), 3),
+        new Sphere(new Vec3(-3, 0, 4), new Vec3(0, 255), 5),
+        new Sphere(new Vec3(3, 3, 10), new Vec3(0, 255, 255), 2),
       ]
 
       for (const object of objects) {
@@ -93,10 +95,13 @@ export class Renderer {
   }
 
   public shade(intersection: Intersection): Vec3 {
-    const redColor = new Vec3(244, 67, 54)
+    const bg = new Vec3()
 
+    /**
+     * @todo handle multiple lights
+     */
     const light = {
-      origin: new Vec3(-6, -5, -10),
+      origin: new Vec3(-6, -2, -10),
       power: 150,
       target: intersection.object.origin,
     }
@@ -108,15 +113,15 @@ export class Renderer {
 
     const diffused = diffuse()
 
-    return redColor.scale(diffused)
+    return bg.add(diffused)
 
-    function diffuse() {
+    function diffuse(): Vec3 {
       const lightDistance = object.origin.sub(light.origin).calcNorm()
       const inverseSquareCoeff = (lightDistance ** -2) * light.power
       const lightDirection = light.target.sub(light.origin).normalize()
       const intensity = lightDirection.dotProduct(normal) * inverseSquareCoeff
 
-      return Math.min(1, intensity)
+      return object.color.scale(Math.min(1, intensity))
     }
   }
 }
