@@ -1,7 +1,7 @@
 import { Ray } from './Ray'
 import { Vec3 } from './Vec3'
 
-const canvas = (window as any).vpCanvas
+const canvas: HTMLCanvasElement = (window as any).vpCanvas
 
 const imageWidth = 640 * devicePixelRatio
 const imageHeight = 480 * devicePixelRatio
