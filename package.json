@@ -7,6 +7,9 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "ts-loader": "^5.3.3",
+    "tslint": "^5.13.1",
+    "typescript": "^3.3.3333",
     "webpack": "^4.29.5",
     "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.2.1"

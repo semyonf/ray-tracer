@@ -1,7 +1,20 @@
 const path = require('path')
 
 module.exports = {
-  entry: './src/main.js',
+  entry: './src/main',
+  devtool: 'inline-source-map',
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      }
+    ]
+  },
+  resolve: {
+    extensions: ['.ts', '.js']
+  },
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
@@ -10,10 +23,9 @@ module.exports = {
   devServer: {
     port: 9831,
     disableHostCheck: true,
-    contentBase: './debug',
+    contentBase: './public',
     watchContentBase: true,
     noInfo: false,
     overlay: true
-  },
-  devtool: '#source-map'
+  }
 }

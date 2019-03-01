@@ -1,7 +1,7 @@
-import { Vec3 } from './Vec3'
 import { Ray } from './Ray'
+import { Vec3 } from './Vec3'
 
-const canvas = window.vpCanvas
+const canvas = (window as any).vpCanvas
 
 const imageWidth = 640 * devicePixelRatio
 const imageHeight = 480 * devicePixelRatio
@@ -22,7 +22,7 @@ const fieldOfView = Math.PI / 2
 const camDirection = camTarget.sub(camOrigin)
 const camDirectionNormalized = camDirection.normalize()
 
-const bn = Vec3.UP.xProduct(camDirection).normalize()
+const bn = Vec3.globalUp.xProduct(camDirection).normalize()
 const vn = camDirectionNormalized.xProduct(bn)
 
 const aspectRatio = imageHeight / imageWidth
@@ -42,7 +42,7 @@ const leftBottomPixelCenter = camDirectionNormalized
 
 const sphere = {
   origin: new Vec3(3, 0, 10),
-  radius: 8
+  radius: 8,
 }
 
 for (let x = 0; x < imageWidth; x++) {
@@ -63,7 +63,7 @@ for (let x = 0; x < imageWidth; x++) {
 
 context.putImageData(data, 0, 0)
 
-function specular(eyeVector, normal, light) {
+function specular(eyeVector: Vec3, normal: Vec3, light: Vec3) {
   const n = 14
   const k = eyeVector
     .sub(normal.scale(2).scale(normal.dotProduct(eyeVector)))
@@ -72,10 +72,7 @@ function specular(eyeVector, normal, light) {
   return k
 }
 
-/**
- * @param {Ray} ray
- */
-function traceRay(ray) {
+function traceRay(ray: Ray) {
   const camToSphereCenter = sphere.origin.sub(ray.origin)
   const sight = camToSphereCenter.dotProduct(ray.direction)
   const D = sphere.radius ** 2 - camToSphereCenter.calcNorm() ** 2 + sight ** 2

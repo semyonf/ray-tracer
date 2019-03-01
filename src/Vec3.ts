@@ -1,49 +1,37 @@
 export class Vec3 {
-  /**
-   * A three-dimensional vector
-   * @param {number} x
-   * @param {number} y
-   * @param {number} z
-   */
-  constructor(x = 0, y = 0, z = 0) {
+  public x: number
+  public y: number
+  public z: number
+
+  public static globalUp = new Vec3(0, 1, 0)
+
+  constructor(x: number = 0, y: number = 0, z: number = 0) {
     this.x = x
     this.y = y
     this.z = z
   }
 
-  /**
-   * @param {Vec3} other
-   */
-  add(other) {
+  add(other: Vec3): Vec3 {
     return new Vec3(this.x + other.x, this.y + other.y, this.z + other.z)
   }
 
-  /**
-   * @param {Vec3} other
-   */
-  sub(other) {
+  sub(other: Vec3): Vec3 {
     return new Vec3(this.x - other.x, this.y - other.y, this.z - other.z)
   }
 
-  calcNorm() {
+  calcNorm(): number {
     return Math.sqrt(this.dotProduct(this))
   }
 
-  /**
-   * @param {number} factor
-   */
-  scale(factor) {
+  scale(factor: number): Vec3 {
     return new Vec3(this.x * factor, this.y * factor, this.z * factor)
   }
 
-  normalize() {
+  normalize(): Vec3 {
     return this.scale(1 / this.calcNorm())
   }
 
-  /**
-   * @param {Vec3} other
-   */
-  xProduct(other) {
+  xProduct(other: Vec3): Vec3 {
     return new Vec3(
       this.y * other.z - this.z * other.y,
       this.z * other.x - this.x * other.z,
@@ -51,12 +39,7 @@ export class Vec3 {
     )
   }
 
-  /**
-   * @param {Vec3} other
-   */
-  dotProduct(other) {
+  dotProduct(other: Vec3): number {
     return this.x * other.x + this.y * other.y + this.z * other.z
   }
 }
-
-Vec3.UP = new Vec3(0, 1, 0)
