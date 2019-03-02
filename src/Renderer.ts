@@ -82,7 +82,7 @@ export class Renderer {
     const light = {
       origin: new Vec3(-15, 10, 0.1),
       power: 150,
-      target: intersection.object.origin,
+      target: new Vec3(),
     }
 
     const { ray, dist, object } = intersection
