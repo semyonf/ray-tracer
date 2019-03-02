@@ -1,5 +1,6 @@
 import { Intersection } from './Intersection'
 import { IObject3D } from './IObject3D'
+import { Light } from './Light'
 import { Ray } from './Ray'
 import { Sphere } from './Sphere'
 import { Vec3 } from './Vec3'
@@ -10,9 +11,10 @@ export class Renderer {
   private imageHeight: number
   private fieldOfView: number = Math.PI / 2
   private objects: IObject3D[] = [
-    new Sphere(new Vec3(3, -3, 0), new Vec3(255), 0.2, 3),
+    new Sphere(new Vec3(5, -3, 2), new Vec3(255), 0.2, 3),
     new Sphere(new Vec3(-3, 0, 4), new Vec3(0, 255), 0.2, 5),
-    new Sphere(new Vec3(3, 3, 10), new Vec3(0, 255, 255), 0.2, 2),
+    new Sphere(new Vec3(3, 5, 10), new Vec3(0, 255, 255), 0.2, 2),
+    new Sphere(new Vec3(6, 10, 4), new Vec3(123, 220, 44), 0.2, 5),
   ]
 
   constructor(canvas: HTMLCanvasElement, width: number, height: number) {
@@ -74,60 +76,64 @@ export class Renderer {
   }
 
   public shade(intersection: Intersection): Vec3 {
-    const colorAccumulator = new Vec3()
+    const { object, ray, dist } = intersection
+
+    let colorAccumulator = object.color.scale(object.ambient)
 
     /**
-     * @todo handle multiple lights
+     * @todo handle multiple lights correctly
      */
-    const light = {
-      origin: new Vec3(-15, 10, 0.1),
-      power: 150,
-      target: new Vec3(),
-    }
-
-    const { ray, dist, object } = intersection
+    const lights: Light[] = [
+      new Light(new Vec3(-10, -15, -10)),
+      // new Light(new Vec3(15, -10, -10)),
+    ]
 
     const intersectionPoint = ray.origin.add(ray.direction.scale(dist))
     const normal = object.normal(intersectionPoint)
-    const lightDirection = light.target.sub(light.origin).normalize()
 
-    const closestIntersection = this.checkIntersections(
-      new Ray(
-        intersectionPoint,
-        intersectionPoint
-          .sub(light.origin)
-          .normalize(),
-      ),
-    )
+    for (const light of lights) {
+      const closestIntersection = this.checkIntersections(
+        new Ray(
+          intersectionPoint,
+          intersectionPoint
+            .sub(light.origin)
+            .normalize(),
+        ),
+      )
 
-    if (closestIntersection.dist < -0.005) {
-      return object.color.scale(object.ambient)
+      if (closestIntersection.dist < -0.005) {
+        continue
+      } else {
+        colorAccumulator = colorAccumulator
+          .add(this.calcDiffuse(object, light, normal))
+          .add(this.calcSpecular(ray, normal, light))
+          .add(object.color.scale(object.ambient))
+      }
     }
 
     return colorAccumulator
-      .add(diffuse())
-      .add(specular())
-      .add(object.color.scale(object.ambient))
+  }
 
-    function diffuse(): Vec3 {
-      const lightDistance = object.origin.sub(light.origin).calcNorm()
-      const inverseSquareCoeff = (lightDistance ** -2) * light.power
-      const intensity = lightDirection.dotProduct(normal) * inverseSquareCoeff
+  private calcSpecular(ray: Ray, normal: Vec3, light: Light): Vec3 {
+    const hardness = 40
 
-      return object.color.scale(Math.min(1, intensity))
-    }
+    const intensity = ray.direction
+      .sub(normal.scale(2).scale(normal.dotProduct(ray.direction)))
+      .dotProduct(light.direction) ** (hardness * 2)
 
-    function specular(): Vec3 {
-      const hardness = 10
+    return new Vec3(255, 255, 255)
+      .scale(0.5)
+      .scale(Math.min(1, intensity))
+  }
 
-      const intensity = ray.direction
-        .sub(normal.scale(2).scale(normal.dotProduct(ray.direction)))
-        .dotProduct(lightDirection) ** (hardness * 2)
+  private calcDiffuse(object: IObject3D, light: Light, normal: Vec3): Vec3 {
+    const lightDistance = object.origin.sub(light.origin).calcNorm()
+    const inverseSquare = (lightDistance ** -2) * light.power
+    const intensity = light.direction.dotProduct(normal) * inverseSquare
 
-      return new Vec3(255, 255, 255)
-        .scale(0.5)
-        .scale(Math.min(1, intensity))
-    }
+    return object.color
+      .scale(Math.min(1, intensity))
+      .add(normal.scale(90))
   }
 
   private checkIntersections(ray: Ray): Intersection {
@@ -144,14 +150,26 @@ export class Renderer {
     return closest
   }
 
-  private traceRay(ray: Ray): Vec3 {
-    const closest = this.checkIntersections(ray)
-    const background = new Vec3(80, 80, 80)
+  private traceRay(rayToTrace: Ray, bounce: number = 0): Vec3 {
+    const closest = this.checkIntersections(rayToTrace)
+    const background = new Vec3(190, 190, 190)
 
     if (!closest) {
-      return background
+      return background.add(rayToTrace.direction.scale(60))
     }
 
-    return this.shade(closest)
+    const { ray, dist, object } = closest
+    const color = this.shade(closest)
+
+    if (bounce < 2) {
+      const intersectionPoint = ray.origin.add(ray.direction.scale(dist))
+      const normal = object.normal(intersectionPoint)
+
+      return color.add(this.traceRay(
+        new Ray(intersectionPoint, normal), ++bounce,
+      ).scale(0.2)).add(normal.scale(50))
+    }
+
+    return color
   }
 }
