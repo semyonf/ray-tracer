@@ -10,9 +10,9 @@ export class Renderer {
   private imageHeight: number
   private fieldOfView: number = Math.PI / 2
   private objects: IObject3D[] = [
-    new Sphere(new Vec3(3, -3, 0), new Vec3(255), 3),
-    new Sphere(new Vec3(-3, 0, 4), new Vec3(0, 255), 5),
-    new Sphere(new Vec3(3, 3, 10), new Vec3(0, 255, 255), 2),
+    new Sphere(new Vec3(3, -3, 0), new Vec3(255), 0.2, 3),
+    new Sphere(new Vec3(-3, 0, 4), new Vec3(0, 255), 0.2, 5),
+    new Sphere(new Vec3(3, 3, 10), new Vec3(0, 255, 255), 0.2, 2),
   ]
 
   constructor(canvas: HTMLCanvasElement, width: number, height: number) {
@@ -101,10 +101,13 @@ export class Renderer {
     )
 
     if (closestIntersection.dist < -0.005) {
-      return new Vec3()
+      return object.color.scale(object.ambient)
     }
 
-    return colorAccumulator.add(diffuse()).add(specular())
+    return colorAccumulator
+      .add(diffuse())
+      .add(specular())
+      .add(object.color.scale(object.ambient))
 
     function diffuse(): Vec3 {
       const lightDistance = object.origin.sub(light.origin).calcNorm()
@@ -143,9 +146,10 @@ export class Renderer {
 
   private traceRay(ray: Ray): Vec3 {
     const closest = this.checkIntersections(ray)
+    const background = new Vec3(80, 80, 80)
 
     if (!closest) {
-      return new Vec3(24, 51, 42).scale(3)
+      return background
     }
 
     return this.shade(closest)
