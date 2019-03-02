@@ -2,4 +2,4 @@
 
 > `npm run dev`
 
-![render](https://i.imgur.com/ROcvzwj.png)
+![render](https://i.imgur.com/gblDThY.png)
