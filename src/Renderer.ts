@@ -107,7 +107,7 @@ export class Renderer {
   }
 
   private calcSpecular(ray: Ray, normal: Vec3, light: Light): Vec3 {
-    const hardness = 10
+    const hardness = 8
     const intensity = ray.direction
       .sub(normal.scale(2 * normal.dotProduct(ray.direction)))
       .dotProduct(light.direction) ** (hardness * 2)
@@ -148,7 +148,7 @@ export class Renderer {
     const { ray, dist, object } = closest
     const color = this.shade(closest)
 
-    if (bounce < 0) {
+    if (bounce < 2) {
       const intersectionPoint = ray.origin.add(ray.direction.scale(dist))
       const normal = object.normal(intersectionPoint)
 
