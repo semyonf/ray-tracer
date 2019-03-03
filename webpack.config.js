@@ -1,8 +1,11 @@
 const path = require('path')
 
+const mode = process.env.NODE_ENV || 'production'
+
 module.exports = {
   entry: './src/main',
-  devtool: 'inline-source-map',
+  devtool: mode == 'development' ? 'inline-source-map' : false,
+  mode,
   module: {
     rules: [
       {
@@ -16,8 +19,8 @@ module.exports = {
     extensions: ['.ts', '.js']
   },
   output: {
-    path: path.resolve(__dirname, './dist'),
-    publicPath: '/dist/',
+    path: path.resolve(__dirname, './public'),
+    publicPath: '/',
     filename: 'bundle.js'
   },
   devServer: {

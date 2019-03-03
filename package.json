@@ -1,12 +1,13 @@
 {
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack-dev-server",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server",
     "build": "webpack --progress --hide-modules"
   },
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "cross-env": "^5.2.0",
     "ts-loader": "^5.3.3",
     "tslint": "^5.13.1",
     "typescript": "^3.3.3333",
