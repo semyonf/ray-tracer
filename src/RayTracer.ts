@@ -1,16 +1,15 @@
 import { Intersection } from './Intersection'
-import { IObject3D } from './IObject3D'
 import { Light } from './Light'
 import { Ray } from './Ray'
 import { Sphere } from './Sphere'
 import { Vec3 } from './Vec3'
 
-export class Renderer {
+export class RayTracer {
   private canvas: HTMLCanvasElement
   private imageWidth: number
   private imageHeight: number
   private fieldOfView: number = Math.PI / 6
-  private objects: IObject3D[] = [
+  private objects: Sphere[] = [
     new Sphere(new Vec3(5, -3, 2), new Vec3(150, 90, 30), 0.1, 3),
     new Sphere(new Vec3(-3, 0, 3), new Vec3(77, 109, 109), 0.1, 5),
     new Sphere(new Vec3(5.5, 7, 5), new Vec3(150, 76, 76), 0.1, 5),
@@ -115,7 +114,7 @@ export class Renderer {
     return new Vec3(255, 255, 255).scale(0.2 * Math.min(1, intensity))
   }
 
-  private calcDiffuse(object: IObject3D, light: Light, normal: Vec3): Vec3 {
+  private calcDiffuse(object: Sphere, light: Light, normal: Vec3): Vec3 {
     const lightDistance = object.origin.sub(light.origin).calcNorm()
     const inverseSquare = (lightDistance ** -2) * light.power
     const intensity = light.direction.dotProduct(normal) * inverseSquare

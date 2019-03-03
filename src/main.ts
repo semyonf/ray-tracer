@@ -1,4 +1,6 @@
-import { Renderer } from './Renderer'
+import { RayTracer } from './RayTracer'
 
-const r = new Renderer((window as any).vpCanvas, 640, 480)
-r.render()
+Object.defineProperty(window, 'RayTracer', {
+  enumerable: true,
+  value: RayTracer,
+})

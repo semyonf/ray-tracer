@@ -1,9 +1,8 @@
 import { Intersection } from './Intersection'
-import { IObject3D } from './IObject3D'
 import { Ray } from './Ray'
 import { Vec3 } from './Vec3'
 
-export class Sphere implements IObject3D {
+export class Sphere {
   public radius: number
   public origin: Vec3
   public color: Vec3
