@@ -1,5 +1,8 @@
 import { Vec3 } from './Vec3'
 
+/**
+ * Represents a light source in the scene
+ */
 export class Light {
   public readonly origin: Vec3
   public readonly target: Vec3
