@@ -1,6 +1,9 @@
 import { Ray } from './Ray'
 import { Sphere } from './Sphere'
 
+/**
+ * Represents an intersection between a ray and an object
+ */
 export class Intersection {
   public object: Sphere
   public ray: Ray
